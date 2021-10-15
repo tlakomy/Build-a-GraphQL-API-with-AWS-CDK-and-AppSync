@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "codegen": "graphql-codegen"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.128.0",
@@ -22,8 +23,13 @@
   },
   "dependencies": {
     "@aws-cdk/aws-appsync": "^1.128.0",
+    "@aws-cdk/aws-dynamodb": "^1.128.0",
     "@aws-cdk/aws-lambda": "^1.128.0",
     "@aws-cdk/core": "1.128.0",
+    "@graphql-codegen/cli": "^2.2.1",
+    "@graphql-codegen/typescript": "^2.2.4",
+    "@types/aws-lambda": "^8.10.84",
+    "aws-sdk": "^2.1008.0",
     "source-map-support": "^0.5.16"
   }
 }

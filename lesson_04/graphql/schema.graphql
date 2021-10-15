@@ -1,9 +1,9 @@
 type Book {
   id: ID!
   name: String!
-  completed: Boolean!
-  rating: Int!
-  reviews: [String]!
+  completed: Boolean
+  rating: Int
+  reviews: [String]
 }
 
 type Query {

@@ -12,7 +12,11 @@ export class AppsyncCdkCoursePlanStack extends cdk.Stack {
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.API_KEY,
-          apiKeyConfig: {},
+          apiKeyConfig: {
+            description: "An API key for my revolutionary bookstore app",
+            name: "My API Key",
+            expires: cdk.Expiration.after(cdk.Duration.days(365)),
+          },
         },
       },
     });

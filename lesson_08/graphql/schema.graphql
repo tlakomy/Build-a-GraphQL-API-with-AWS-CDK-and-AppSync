@@ -9,11 +9,12 @@ type Book {
 input BookInput {
   id: ID!
   name: String!
+  completed: Boolean!
+  rating: Int!
 }
 
 type Query {
   listBooks: [Book]
-  getBookById(bookId: ID!): Book
 }
 
 type Mutation {

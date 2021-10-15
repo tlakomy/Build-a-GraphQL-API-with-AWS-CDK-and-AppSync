@@ -1,6 +1,13 @@
 import { AppSyncResolverHandler } from "aws-lambda";
 import { DynamoDB } from "aws-sdk";
-import { Book } from "../types/books";
+
+type Book = {
+  id: string;
+  name: string;
+  completed?: boolean;
+  rating?: number;
+  reviews?: string[];
+};
 
 const docClient = new DynamoDB.DocumentClient();
 

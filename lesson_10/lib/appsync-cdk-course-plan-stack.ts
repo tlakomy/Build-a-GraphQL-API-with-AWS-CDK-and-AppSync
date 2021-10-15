@@ -15,17 +15,6 @@ export class AppsyncCdkCoursePlanStack extends cdk.Stack {
       },
     });
 
-    const commonLambdaProps: Omit<lambda.FunctionProps, "handler"> = {
-      runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset("functions"),
-      memorySize: 1024,
-      architectures: [lambda.Architecture.ARM_64],
-      timeout: cdk.Duration.seconds(10),
-      environment: {
-        BOOKS_TABLE: booksTable.tableName,
-      },
-    };
-
     const api = new appsync.GraphqlApi(this, "Api", {
       name: "my-api",
       schema: appsync.Schema.fromAsset("graphql/schema.graphql"),
@@ -43,7 +32,11 @@ export class AppsyncCdkCoursePlanStack extends cdk.Stack {
 
     const listBooksLambda = new lambda.Function(this, "listBooksHandler", {
       handler: "listBooks.handler",
-      ...commonLambdaProps,
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromAsset("functions"),
+      environment: {
+        BOOKS_TABLE: booksTable.tableName,
+      },
     });
 
     booksTable.grantReadData(listBooksLambda);
@@ -59,8 +52,12 @@ export class AppsyncCdkCoursePlanStack extends cdk.Stack {
     });
 
     const getBookByIdLambda = new lambda.Function(this, "getBookById", {
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: "getBookById.handler",
-      ...commonLambdaProps,
+      code: lambda.Code.fromAsset("functions"),
+      environment: {
+        BOOKS_TABLE: booksTable.tableName,
+      },
     });
 
     booksTable.grantReadData(getBookByIdLambda);
@@ -76,8 +73,13 @@ export class AppsyncCdkCoursePlanStack extends cdk.Stack {
     });
 
     const createBookLambda = new lambda.Function(this, "createBookHandler", {
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: "createBook.handler",
-      ...commonLambdaProps,
+      code: lambda.Code.fromAsset("functions"),
+      memorySize: 1024,
+      environment: {
+        BOOKS_TABLE: booksTable.tableName,
+      },
     });
 
     booksTable.grantReadWriteData(createBookLambda);

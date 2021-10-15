@@ -13,7 +13,6 @@ input BookInput {
 
 type Query {
   listBooks: [Book]
-  getBookById(bookId: ID!): Book
 }
 
 type Mutation {
