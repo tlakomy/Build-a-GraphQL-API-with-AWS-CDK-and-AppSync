@@ -49,7 +49,7 @@ Steps:
 ```graphql
 type Book {
   id: ID!
-  name: String!
+  title: String!
   completed: Boolean
   rating: Int
   reviews: [String]
@@ -646,6 +646,105 @@ const wait = (timeoutMs: number) =>
 **Add an updateBook mutation to AppSync GraphQL API**
 
 Description: _Whenever we create a book, there are no reviews, rating or `completed` flag. In this lesson, we're going to learn how to implement an `updateBook` mutation in order to be able to update the properties of an already existing book. In addition to that, we're going to learn how to use [dynoexpr](https://github.com/tuplo/dynoexpr) in order to implement that functionality without introducing unnecessary complexity_
+
+Steps:
+
+- Let's add an ability to update a book
+- Update the schema:
+
+```graphql
+type Mutation {
+  createBook(book: BookInput!): Book
+  updateBook(book: UpdateBookInput!): Book
+}
+...
+
+input UpdateBookInput {
+  id: ID!
+  title: String
+  completed: Boolean
+  rating: Int
+  reviews: [String]
+}
+```
+
+- Regenerate types
+- with DynamoDB we usually need to write `UpdateExpression`s by hand, which can be tricky
+- Luckily, we don't have to because there's dynoexpr
+- `npm i @tuplo/dynoexpr`
+- We need to bundle this dependency with our Lambda function, there's a construct that can help us `@aws-cdk/aws-lambda-nodejs` which uses `esbuild` under the hood
+- `npm install @aws-cdk/aws-lambda-nodejs` & `npm install --save-dev esbuild`
+
+```ts
+const updateBookLambda = new nodeJsLambda.NodejsFunction(
+  this,
+  "updateBookHandler",
+  {
+    ...commonLambdaProps,
+    entry: path.join(__dirname, "../functions/updateBook.ts"),
+  },
+);
+
+booksTable.grantReadWriteData(updateBookLambda);
+
+const updateBookDataSource = api.addLambdaDataSource(
+  "updateBookDataSource",
+  updateBookLambda,
+);
+
+updateBookDataSource.createResolver({
+  typeName: "Mutation",
+  fieldName: "updateBook",
+});
+```
+
+- Implement the function:
+
+```ts
+import { AppSyncResolverHandler } from "aws-lambda";
+import { DynamoDB } from "aws-sdk";
+import { Book, MutationUpdateBookArgs } from "../types/books";
+import dynoexpr from "@tuplo/dynoexpr";
+
+const documentClient = new DynamoDB.DocumentClient();
+
+export const handler: AppSyncResolverHandler<
+  MutationUpdateBookArgs,
+  Book | null
+> = async (event) => {
+  try {
+    const book = event.arguments.book;
+    if (!process.env.BOOKS_TABLE) {
+      console.error("Error: BOOKS_TABLE was not specified");
+
+      return null;
+    }
+
+    const params = dynoexpr<DynamoDB.DocumentClient.UpdateItemInput>({
+      TableName: process.env.BOOKS_TABLE,
+      Key: { id: book.id },
+      ReturnValues: "ALL_NEW",
+      Update: {
+        ...(book.title !== undefined ? { title: book.title } : {}),
+        ...(book.rating !== undefined ? { rating: book.rating } : {}),
+        ...(book.completed !== undefined ? { completed: book.completed } : {}),
+      },
+    });
+
+    console.log("params", params);
+
+    const result = await documentClient.update(params).promise();
+
+    console.log("result", result);
+
+    return result.Attributes as Book;
+  } catch (error) {
+    console.error("Whoops", error);
+
+    return null;
+  }
+};
+```
 
 ## Lesson 15
 

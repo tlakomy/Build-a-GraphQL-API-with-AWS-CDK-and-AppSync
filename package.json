@@ -16,6 +16,7 @@
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "aws-cdk": "1.128.0",
+    "esbuild": "^0.13.8",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
@@ -28,6 +29,7 @@
     "@aws-cdk/core": "1.128.0",
     "@graphql-codegen/cli": "^2.2.1",
     "@graphql-codegen/typescript": "^2.2.4",
+    "@tuplo/dynoexpr": "^2.7.2",
     "@types/aws-lambda": "^8.10.84",
     "aws-sdk": "^2.1008.0",
     "source-map-support": "^0.5.16"

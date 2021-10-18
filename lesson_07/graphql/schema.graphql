@@ -1,6 +1,6 @@
 type Book {
   id: ID!
-  name: String!
+  title: String!
   completed: Boolean
   rating: Int
   reviews: [String]
